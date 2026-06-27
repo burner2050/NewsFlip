@@ -125,13 +125,15 @@ contact@devteam.ro.
 Articles are grouped into **stories** so the same event covered by N outlets
 shows as one entry:
 
-- Each article gets an embedding (pluggable; currently the lexical stub
-  embedder — swap in a real model via `EMBEDDING_PROVIDER`).
+- Each article gets an embedding. `EMBEDDING_PROVIDER=local` uses
+  `all-MiniLM-L6-v2` via Transformers.js (offline, no API key, 384-dim,
+  matching the schema); `stub` is a zero-setup lexical fallback.
 - **Single-link clustering**: a new article joins the story of its most similar
   already-clustered article (via pgvector `<=>` cosine, HNSW index) when the
   similarity is `>= CLUSTER_SIM_THRESHOLD`, within `CLUSTER_WINDOW_HOURS`.
   Matching against members (not a drifting centroid) avoids "rich-get-richer"
-  collapse.
+  collapse. The threshold is embedder-dependent (tune empirically): ~0.6 for the
+  lexical stub, ~0.7 for MiniLM.
 - The homepage shows **Top Stories**; each `/story/:id` page shows the source
   coverage and a timeline.
 
