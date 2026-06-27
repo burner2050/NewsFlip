@@ -4,6 +4,8 @@ import { addSource, listSources } from './db/sources.js';
 import { ingestAll } from './ingest/ingest.js';
 import { searchArticles } from './search/search.js';
 import { addAlert, listAlerts, runAlerts } from './alerts/alerts.js';
+import { backfillEmbeddings, clusterUnassigned, recluster, reembedAll } from './cluster/cluster.js';
+import { listStories } from './db/stories.js';
 import { log } from './lib/logger.js';
 
 const HELP = `NewsFlip CLI
@@ -16,7 +18,11 @@ Commands:
                                   Register an RSS/Atom feed
   list-feeds                      List registered feeds
   seed                            Add a few well-known sample feeds
-  ingest                          Fetch all feeds now (dedup + persist)
+  ingest                          Fetch all feeds now (dedup + persist + cluster)
+  backfill-embeddings             Embed any articles missing an embedding
+  cluster                         Embed + cluster unassigned articles into stories
+  recluster                       Wipe stories and re-cluster everything
+  list-stories                    List clustered stories (largest first)
   search <query...>               Full-text search articles
   add-alert <name> <query...>     Create a saved-search alert
   list-alerts                     List alerts
@@ -69,6 +75,40 @@ async function main(): Promise<void> {
     case 'ingest': {
       const stats = await ingestAll();
       log.info(`Inserted ${stats.inserted}, duplicates ${stats.duplicates}, errors ${stats.errors}`);
+      break;
+    }
+
+    case 'backfill-embeddings': {
+      const n = await backfillEmbeddings();
+      log.info(`Embedded ${n} article(s)`);
+      break;
+    }
+
+    case 'cluster': {
+      const n = await backfillEmbeddings();
+      const { created, joined } = await clusterUnassigned();
+      log.info(`Embedded ${n}; ${created} new story(ies), ${joined} joined`);
+      break;
+    }
+
+    case 'recluster': {
+      const { created, joined } = await recluster();
+      log.info(`Reclustered: ${created} story(ies), ${joined} article(s) joined`);
+      break;
+    }
+
+    case 'reembed': {
+      const n = await reembedAll();
+      log.info(`Re-embedded ${n} article(s) (stories detached; run \`cluster\` next)`);
+      break;
+    }
+
+    case 'list-stories': {
+      const stories = await listStories(40);
+      if (stories.length === 0) log.info('No stories yet. Run `npm run cli -- cluster`.');
+      for (const s of stories) {
+        log.info(`#${s.id} [${s.article_count} articles / ${s.source_count} sources] ${s.title ?? '(untitled)'}`);
+      }
       break;
     }
 

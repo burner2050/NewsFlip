@@ -4,6 +4,7 @@ import { log } from './lib/logger.js';
 import { pool } from './db/pool.js';
 import { ingestAll } from './ingest/ingest.js';
 import { runAlerts } from './alerts/alerts.js';
+import { embedAndCluster } from './cluster/cluster.js';
 
 let running = false;
 
@@ -15,6 +16,9 @@ async function tick(): Promise<void> {
   running = true;
   try {
     await ingestAll();
+    // ingestAll clusters freshly-inserted articles; this also sweeps up any
+    // articles left unembedded/unclustered by a previous interrupted run.
+    await embedAndCluster();
     await runAlerts(config.dedupWindowHours);
   } catch (err) {
     log.error('Ingest cycle failed', err);

@@ -16,6 +16,13 @@ function int(key: string, fallback: number): number {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function num(key: string, fallback: number): number {
+  const v = process.env[key];
+  if (v === undefined || v === '') return fallback;
+  const n = Number.parseFloat(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
 function databaseUrl(): string {
   if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
   const user = str('PGUSER', 'newsflip');
@@ -39,6 +46,11 @@ export const config = {
   aiProvider: str('AI_PROVIDER', 'stub'),
   embeddingProvider: str('EMBEDDING_PROVIDER', 'stub'),
   embeddingDim: int('EMBEDDING_DIM', 384),
+
+  // Clustering: an article joins the nearest story whose centroid cosine
+  // similarity is >= threshold and that was updated within the window.
+  clusterSimThreshold: num('CLUSTER_SIM_THRESHOLD', 0.62),
+  clusterWindowHours: int('CLUSTER_WINDOW_HOURS', 72),
 
   logLevel: str('LOG_LEVEL', 'info'),
 } as const;

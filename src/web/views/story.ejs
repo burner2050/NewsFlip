@@ -1,0 +1,31 @@
+<p class="meta"><a href="/">← back to top stories</a></p>
+
+<article class="full">
+  <h1 style="margin-bottom:8px;"><%= story.title || '(untitled story)' %></h1>
+  <div class="meta">
+    <span class="pill"><%= articles.length %> article<%= articles.length === 1 ? '' : 's' %></span>
+    <span class="pill"><%= sources.length %> source<%= sources.length === 1 ? '' : 's' %></span>
+    · first seen <%= new Date(story.first_seen_at).toLocaleString() %>
+  </div>
+
+  <% if (story.summary) { %>
+    <div class="body" style="margin-top:14px;"><%= story.summary %></div>
+  <% } %>
+
+  <h3 style="margin:22px 0 8px;">Sources</h3>
+  <div class="meta"><%= sources.join(' · ') %></div>
+
+  <h3 style="margin:22px 0 8px;">Coverage timeline</h3>
+  <ol class="timeline">
+    <% articles.forEach(function (a) { %>
+      <li>
+        <div class="meta">
+          <%= a.published_at ? new Date(a.published_at).toLocaleString() : 'undated' %> · <strong><%= a.source_name %></strong>
+        </div>
+        <a href="/article/<%= a.id %>"><%= a.title %></a>
+        · <a href="<%= a.url %>" target="_blank" rel="noopener">original ↗</a>
+        <% if (a.excerpt) { %><p class="excerpt" style="margin:4px 0 0;"><%= a.excerpt %></p><% } %>
+      </li>
+    <% }); %>
+  </ol>
+</article>

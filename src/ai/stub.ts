@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import type { ArticleInput, Embedder, Fact, FactExtractor, Summarizer } from './types.js';
-import { makeExcerpt, tokenize } from '../lib/text.js';
+import { contentTokens, makeExcerpt } from '../lib/text.js';
 
 /**
  * Deterministic hashing embedder: maps token hashes into a fixed-dim vector
@@ -17,7 +17,7 @@ export class StubEmbedder implements Embedder {
 
   private embedOne(text: string): number[] {
     const vec = new Array<number>(this.dim).fill(0);
-    for (const tok of tokenize(text)) {
+    for (const tok of contentTokens(text)) {
       const h = createHash('md5').update(tok).digest();
       const idx = h.readUInt32LE(0) % this.dim;
       const sign = (h[4]! & 1) === 0 ? 1 : -1;

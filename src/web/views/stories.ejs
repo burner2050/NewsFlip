@@ -1,0 +1,22 @@
+<h1>Top stories <small style="color:var(--muted);font-size:14px;font-weight:400;">(<%= total %> clustered)</small></h1>
+
+<% if (stories.length === 0) { %>
+  <div class="empty">No stories yet. Run <code>npm run cli -- cluster</code>.</div>
+<% } else { %>
+  <% stories.forEach(function (s) { %>
+    <div class="card">
+      <h2><a href="/story/<%= s.id %>"><%= s.title || '(untitled story)' %></a></h2>
+      <div class="meta">
+        <span class="pill"><%= s.article_count %> article<%= s.article_count === 1 ? '' : 's' %></span>
+        <span class="pill"><%= s.source_count %> source<%= s.source_count === 1 ? '' : 's' %></span>
+        <% if (s.latest_at) { %> · updated <%= new Date(s.latest_at).toLocaleString() %><% } %>
+      </div>
+      <% if (s.excerpt) { %><p class="excerpt"><%= s.excerpt %></p><% } %>
+    </div>
+  <% }); %>
+
+  <div class="pager">
+    <% if (page > 1) { %><a class="btn" href="/?page=<%= page - 1 %>">← Newer</a><% } %>
+    <% if (page * pageSize < total) { %><a class="btn" href="/?page=<%= page + 1 %>">Older →</a><% } %>
+  </div>
+<% } %>

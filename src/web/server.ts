@@ -8,6 +8,7 @@ import { config } from '../config.js';
 import { log } from '../lib/logger.js';
 import { pool } from '../db/pool.js';
 import { listRecent, getArticle, countArticles } from '../db/articles.js';
+import { listStories, getStory, getStoryArticles, countStories } from '../db/stories.js';
 import { listSources } from '../db/sources.js';
 import { searchArticles, normalizeQuery } from '../search/search.js';
 import { listAlerts, addAlert, listAlertMatches } from '../alerts/alerts.js';
@@ -25,22 +26,37 @@ export function buildServer() {
     defaultContext: { active: '' },
   });
 
-  // Home: latest articles
+  // Home: clustered stories (falls back to the raw article list if nothing has
+  // been clustered yet).
   app.get('/', async (req, reply) => {
     const page = Math.max(1, Number((req.query as any).page) || 1);
     const pageSize = 30;
-    const [articles, total] = await Promise.all([
-      listRecent(pageSize, (page - 1) * pageSize),
-      countArticles(),
-    ]);
-    return reply.view('index.ejs', {
-      title: 'Latest',
-      active: 'home',
-      articles,
-      page,
-      pageSize,
-      total,
+    const total = await countStories();
+    if (total === 0) {
+      const [articles, articleTotal] = await Promise.all([
+        listRecent(pageSize, (page - 1) * pageSize),
+        countArticles(),
+      ]);
+      return reply.view('index.ejs', {
+        title: 'Latest', active: 'home', articles, page, pageSize, total: articleTotal,
+      });
+    }
+    const stories = await listStories(pageSize, (page - 1) * pageSize);
+    return reply.view('stories.ejs', {
+      title: 'Top Stories', active: 'home', stories, page, pageSize, total,
     });
+  });
+
+  // Story detail: clustered coverage from multiple sources
+  app.get('/story/:id', async (req, reply) => {
+    const id = Number((req.params as any).id);
+    const story = Number.isFinite(id) ? await getStory(id) : null;
+    if (!story) {
+      return reply.code(404).view('error.ejs', { title: 'Not found', active: '', message: 'Story not found.' });
+    }
+    const articles = await getStoryArticles(id);
+    const sources = [...new Set(articles.map((a) => a.source_name))];
+    return reply.view('story.ejs', { title: story.title ?? 'Story', active: 'home', story, articles, sources });
   });
 
   // Search (full page + HTMX partial when ?partial=1)

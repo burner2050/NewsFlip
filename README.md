@@ -121,11 +121,35 @@ in `src/ai/types.ts` and the license gate in `src/license/license.ts`, so the
 project builds and runs fully on the AGPL core alone. Commercial licensing:
 contact@devteam.ro.
 
-## Phase 2 (planned, interfaces in place)
-- Real embeddings (`EMBEDDING_PROVIDER=anthropic|openai|ollama`) → fill
-  `articles.embedding`.
-- **Story clustering**: online clustering by cosine similarity over pgvector
-  (HNSW index already created), grouping articles into `stories`.
-- **Fact extraction** + **summaries** via `AI_PROVIDER` implementing the
-  `FactExtractor` / `Summarizer` interfaces.
+## Story clustering (implemented)
+Articles are grouped into **stories** so the same event covered by N outlets
+shows as one entry:
+
+- Each article gets an embedding (pluggable; currently the lexical stub
+  embedder — swap in a real model via `EMBEDDING_PROVIDER`).
+- **Single-link clustering**: a new article joins the story of its most similar
+  already-clustered article (via pgvector `<=>` cosine, HNSW index) when the
+  similarity is `>= CLUSTER_SIM_THRESHOLD`, within `CLUSTER_WINDOW_HOURS`.
+  Matching against members (not a drifting centroid) avoids "rich-get-richer"
+  collapse.
+- The homepage shows **Top Stories**; each `/story/:id` page shows the source
+  coverage and a timeline.
+
+```bash
+npm run cli -- cluster        # embed + cluster unassigned articles
+npm run cli -- list-stories   # see clustered stories
+npm run cli -- recluster      # wipe stories and re-cluster (keeps embeddings)
+npm run cli -- reembed        # recompute all embeddings (after changing embedder)
+```
+
+> Cluster quality scales with the embedder. The stub is lexical (shared
+> vocabulary), so it groups same-event articles well but can over-group
+> same-source listicles. Real semantic embeddings fix that with no code change.
+
+## Phase 2 (remaining, interfaces in place)
+- Real embeddings (`EMBEDDING_PROVIDER=anthropic|openai|ollama`) → better
+  clusters automatically.
+- **Fact extraction** (who/what/when/numbers/quotes/companies/tickers…) +
+  grounded **summaries** via `AI_PROVIDER` implementing the `FactExtractor` /
+  `Summarizer` interfaces — rendered on the story page.
 - Alert delivery via webhook/email (schema already supports channels).

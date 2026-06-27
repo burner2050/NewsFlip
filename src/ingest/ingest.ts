@@ -6,6 +6,7 @@ import { contentHash, simhash } from '../lib/hash.js';
 import { makeExcerpt, normalizeWhitespace, stripHtml } from '../lib/text.js';
 import { fetchFeed, type ParsedItem } from './rss.js';
 import { NearDupIndex } from './dedup.js';
+import { embedAndCluster } from '../cluster/cluster.js';
 
 export interface IngestStats {
   sources: number;
@@ -44,6 +45,16 @@ export async function ingestAll(): Promise<IngestStats> {
     `Ingest done: ${stats.inserted} new, ${stats.duplicates} dup, ` +
       `${stats.notModified} unchanged, ${stats.errors} errors across ${stats.sources} sources`,
   );
+
+  // Embed + cluster freshly inserted articles into stories.
+  if (stats.inserted > 0) {
+    try {
+      await embedAndCluster();
+    } catch (err) {
+      log.error('Clustering after ingest failed', err);
+    }
+  }
+
   return stats;
 }
 
