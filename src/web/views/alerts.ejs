@@ -1,0 +1,27 @@
+<h1>Alerts</h1>
+
+<form class="inline" action="/alerts" method="post">
+  <input type="text" name="name" placeholder="Alert name" required />
+  <input type="text" name="query" placeholder='Query, e.g. "interest rates" OR inflation' required style="flex:1;min-width:240px;" />
+  <button class="btn" type="submit">Create alert</button>
+</form>
+
+<% if (items.length === 0) { %>
+  <div class="empty">No alerts yet. Create one above — new matching articles will appear here.</div>
+<% } else { %>
+  <% items.forEach(function (it) { %>
+    <div class="card">
+      <h2><%= it.alert.name %> <small style="color:var(--muted);font-weight:400;font-size:13px;">“<%= it.alert.query %>”</small></h2>
+      <% if (it.matches.length === 0) { %>
+        <p class="meta">No matches yet.</p>
+      <% } else { %>
+        <% it.matches.forEach(function (m) { %>
+          <div class="meta">
+            <a href="/article/<%= m.id %>"><%= m.title %></a> — <%= m.source_name %>
+            (<%= new Date(m.matched_at).toLocaleString() %>)
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+  <% }); %>
+<% } %>

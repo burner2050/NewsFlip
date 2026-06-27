@@ -1,0 +1,9 @@
+<div class="card">
+  <h2><a href="/article/<%= a.id %>"><%= a.title %></a></h2>
+  <div class="meta">
+    <%= a.source_name %>
+    <% if (a.published_at) { %> · <%= new Date(a.published_at).toLocaleString() %><% } %>
+    · <a href="<%= a.url %>" target="_blank" rel="noopener">original ↗</a>
+  </div>
+  <p class="excerpt"><%- typeof a.headline !== 'undefined' && a.headline ? a.headline : (a.excerpt || '') %></p>
+</div>

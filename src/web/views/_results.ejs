@@ -1,0 +1,10 @@
+<% if (!q) { %>
+  <div class="empty">Type a query to search the archive.</div>
+<% } else if (result.hits.length === 0) { %>
+  <div class="empty">No results for “<%= q %>”.</div>
+<% } else { %>
+  <p class="meta"><%= result.total %> result<%= result.total === 1 ? '' : 's' %> for “<%= q %>”</p>
+  <% result.hits.forEach(function (a) { %>
+    <%- include('_card', { a }) %>
+  <% }); %>
+<% } %>

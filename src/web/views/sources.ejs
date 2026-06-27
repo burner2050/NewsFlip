@@ -1,0 +1,18 @@
+<h1>Sources</h1>
+<% if (sources.length === 0) { %>
+  <div class="empty">No feeds registered. Run <code>npm run cli -- seed</code>.</div>
+<% } else { %>
+  <table>
+    <thead><tr><th>Name</th><th>Feed</th><th>Last fetched</th><th>Status</th></tr></thead>
+    <tbody>
+      <% sources.forEach(function (s) { %>
+        <tr>
+          <td><%= s.name %> <%= s.active ? '' : '(inactive)' %></td>
+          <td><a href="<%= s.feed_url %>" target="_blank" rel="noopener"><%= s.feed_url %></a></td>
+          <td><%= s.last_fetched_at ? new Date(s.last_fetched_at).toLocaleString() : '—' %></td>
+          <td><% if (s.last_error) { %><span class="err"><%= s.last_error %></span><% } else { %><span class="ok">ok</span><% } %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+<% } %>

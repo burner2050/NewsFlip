@@ -1,0 +1,11 @@
+<h1>Search</h1>
+
+<form class="inline" hx-get="/search" hx-target="#results" hx-trigger="submit, keyup changed delay:400ms from:input[name='q']" hx-vals='{"partial":"1"}' hx-push-url="false">
+  <input type="search" name="q" value="<%= q %>" placeholder="Try: &quot;climate summit&quot; OR election -sports" style="flex:1;min-width:240px;" autofocus />
+  <button class="btn" type="submit">Search</button>
+</form>
+<p class="meta">Supports quoted "phrases", OR, and -negation (Postgres websearch syntax).</p>
+
+<div id="results">
+  <%- include('_results', { q, result }) %>
+</div>

@@ -1,0 +1,33 @@
+NewsFlip Enterprise Edition License
+Copyright (c) 2026 NewsFlip
+
+This directory ("ee/") and all files within it are NOT licensed under the
+AGPL-3.0 license that governs the rest of this repository. They are proprietary
+and made available under the following terms.
+
+1. Definitions.
+   "Software" means the contents of this ee/ directory.
+   "License Key" means a valid subscription credential issued by the copyright
+   holder.
+
+2. Grant. Subject to a current, paid subscription and a valid License Key, you
+   are granted a non-exclusive, non-transferable, revocable license to use,
+   run, and modify the Software solely for your own internal use in connection
+   with NewsFlip.
+
+3. Restrictions. Without a valid License Key you may NOT use the Software in
+   production. You may NOT redistribute, sublicense, resell, or offer the
+   Software as a hosted or managed service to third parties. You may NOT remove
+   or circumvent the license-key checks.
+
+4. Source availability. Source is provided for transparency and self-hosting by
+   licensees; it does not grant the rights of an open-source license.
+
+5. Termination. This license terminates automatically if you breach it or your
+   subscription lapses.
+
+6. NO WARRANTY. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+   IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR
+   OTHER LIABILITY ARISING FROM THE SOFTWARE OR ITS USE.
+
+For commercial licensing inquiries: contact@devteam.ro

@@ -1,0 +1,11 @@
+<p class="meta"><a href="/">← back to latest</a></p>
+<article class="full">
+  <h1 style="margin-bottom:8px;"><%= article.title %></h1>
+  <div class="meta">
+    <%= article.source_name %>
+    <% if (article.author) { %> · <%= article.author %><% } %>
+    <% if (article.published_at) { %> · <%= new Date(article.published_at).toLocaleString() %><% } %>
+    · <a href="<%= article.url %>" target="_blank" rel="noopener">read original ↗</a>
+  </div>
+  <div class="body"><%= article.content || article.excerpt || '(no content extracted)' %></div>
+</article>

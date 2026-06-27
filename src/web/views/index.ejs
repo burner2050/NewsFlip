@@ -1,0 +1,17 @@
+<h1>Latest news <small style="color:var(--muted);font-size:14px;font-weight:400;">(<%= total %> articles)</small></h1>
+
+<% if (articles.length === 0) { %>
+  <div class="empty">
+    No articles yet. Seed feeds and ingest:<br />
+    <code>npm run cli -- seed &amp;&amp; npm run cli -- ingest</code>
+  </div>
+<% } else { %>
+  <% articles.forEach(function (a) { %>
+    <%- include('_card', { a }) %>
+  <% }); %>
+
+  <div class="pager">
+    <% if (page > 1) { %><a class="btn" href="/?page=<%= page - 1 %>">← Newer</a><% } %>
+    <% if (page * pageSize < total) { %><a class="btn" href="/?page=<%= page + 1 %>">Older →</a><% } %>
+  </div>
+<% } %>
