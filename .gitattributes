@@ -1,0 +1,14 @@
+# Normalize line endings: store as LF in the repo, check out native locally.
+* text=auto eol=lf
+
+# Keep these always-LF regardless of platform.
+*.sh text eol=lf
+
+# Treat common binaries as binary (no EOL conversion / diffing).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
